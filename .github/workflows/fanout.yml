@@ -28,5 +28,5 @@ jobs:
               --method POST \
               -F ref="master" \
               -F inputs[target]=$ITEM \
-              -F inputs[pr_number]="${{ github.event.number }}"
+              -F inputs[pr_number]='${{ github.event.number }}'
           done
