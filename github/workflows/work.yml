@@ -1,0 +1,19 @@
+on:
+  workflow_dispatch:
+    inputs:
+      target:      { type: string, required: true }
+      pr_number:   { type: string, required: true }
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: per-item-${{ inputs.target }}-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  work:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🔧 Working on ${{ inputs.target }} for PR ${{ inputs.pr_number }}"

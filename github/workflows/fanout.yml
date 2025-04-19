@@ -1,0 +1,32 @@
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+  actions: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: gen
+        run: ./stacks
+
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          LIST: ${{ steps.gen.outputs.items }}
+          COMMIT: ${{ github.event.pull_request.head.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "$LIST" | jq -r '.[]' | while read ITEM; do
+            echo "• dispatching item: $ITEM"
+            gh api "repos/$REPO/actions/workflows/work.yml/dispatches" \
+              --method POST \
+              -F ref="$COMMIT" \
+              -F inputs[target]=$ITEM \
+              -F inputs[pr_number]="${{ github.event.number }}"
+          done
