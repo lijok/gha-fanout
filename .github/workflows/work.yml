@@ -26,7 +26,7 @@ jobs:
           gh api -X PATCH -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             -f 'status=in_progress' \
-            -f 'output[title]=Apply $ITEM - ${{ github.event.number }}' \
+            -f 'output[title]=Apply ${{ inputs.target }} - ${{ inputs.pr_number }}' \
             -f 'output[summary]=A *fancy* summary' \
             -f 'output[images][][image_url]=https://www.kenmuse.com/favicon/apple-touch-icon.png' \
             -f 'output[images][][caption]=Sample from kenmuse.com' \
