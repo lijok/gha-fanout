@@ -23,7 +23,7 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           echo "$LIST" | jq -r '.[]' | while read ITEM; do
-            echo "• dispatching item: $ITEM" "${{ github.event.number }}"
+            echo • dispatching item: $ITEM "${{ github.event.number }}"
             gh api "repos/$REPO/actions/workflows/work.yml/dispatches" \
               --method POST \
               -F ref="master" \
