@@ -24,9 +24,12 @@ jobs:
         run: |
           echo "$LIST" | jq -r '.[]' | while read ITEM; do
             echo • dispatching item: $ITEM "${{ github.event.number }}"
-            gh api "repos/$REPO/actions/workflows/work.yml/dispatches" \
+            gh api \
               --method POST \
-              -F ref="master" \
-              -F inputs[target]=$ITEM \
-              -F inputs[pr_number]='${{ github.event.number }}'
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              repos/$REPO/actions/workflows/work.yml/dispatches \
+              -f "ref=master" \
+              -f "inputs[target]=$ITEM" \
+              -f "inputs[pr_number]=${{ github.event.number }}"
           done
