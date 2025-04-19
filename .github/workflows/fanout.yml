@@ -32,4 +32,5 @@ jobs:
               -f "ref=test" \
               -f "inputs[target]=$ITEM" \
               -f "inputs[pr_number]=${{ github.event.number }}"
+              -f "inputs[head_sha]=${{ github.event.pull_request.head.sha }}"
           done
