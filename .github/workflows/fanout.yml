@@ -26,7 +26,7 @@ jobs:
             echo "• dispatching item: $ITEM"
             gh api "repos/$REPO/actions/workflows/work.yml/dispatches" \
               --method POST \
-              -F ref="$COMMIT" \
+              -F ref="master" \
               -F inputs[target]=$ITEM \
               -F inputs[pr_number]="${{ github.event.number }}"
           done
