@@ -3,10 +3,12 @@ on:
     inputs:
       target:      { type: string, required: true }
       pr_number:   { type: string, required: true }
+      check_id:   { type: string, required: true }
 
 permissions:
   contents: read
   pull-requests: write
+  checks: write
 
 concurrency:
   group: per-item-${{ inputs.target }}-${{ github.sha }}
@@ -16,4 +18,38 @@ jobs:
   work:
     runs-on: ubuntu-latest
     steps:
+      - name: Acknowledge Request
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+        run: |
+          gh api -X PATCH -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            -f 'status=in_progress' \
+            -f 'output[title]=Apply ${{ inputs.target }} - ${{ inputs.pr_number }}' \
+            -f 'output[summary]=A *fancy* summary' \
+            -f 'output[images][][image_url]=https://www.kenmuse.com/favicon/apple-touch-icon.png' \
+            -f 'output[images][][caption]=Sample from kenmuse.com' \
+            -f 'output[images][][alt]=Logo for kenmuse.com' \
+            /repos/${{ github.repository }}/check-runs/${{ inputs.check_id }}
+
       - run: echo "🔧 Working on ${{ inputs.target }} for PR ${{ inputs.pr_number }}"
+      - run: sleep 10
+
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X PATCH -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/check-runs/${{ inputs.check_id }} \
+            --input - <<- EOF
+            {
+              "conclusion": "success",
+              "details_url": "https://google.com",
+              "output": {
+                "title": "My Check Run Title 🚀",
+                "summary": "**Summary**: The run completed.",
+                "text": "Everything worked as expected. You should see a logo above."
+               }
+            }
+          EOF
